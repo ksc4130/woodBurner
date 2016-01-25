@@ -47,8 +47,17 @@ function initRead () {
     b.analogRead(inputPin, checkRead);
     
     function checkRead(x) {
+        if(!sockets.length) {
+            setTimeout(function () {
+                initRead();
+            }, 100);
+            return;
+        }
         if(x.err) {
             console.log(x.err);
+            setTimeout(function () {
+                initRead();
+            }, 100);
             return;
         }
         var millivolts = x.value * 1800;  // 1.8V reference = 1800 mV

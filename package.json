@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bonescript": "^0.2.5",
     "ejs": "^2.3.4",
     "express": "^4.13.3",
     "socket.io": "^1.4.4"
