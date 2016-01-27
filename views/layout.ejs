@@ -106,9 +106,9 @@
         <div ng-show="vals.tmp !== null" class="row">
             <div class="col-md-6 col-md-offset-3">
                 {{vals.tmp ? vals.tmp + '&deg;' : ''}}
-                {{vals.isHeating ? 'fan' : 'no fan'}}
-                <button ng-show="vals.killed" class="btn btn-primary" ng-click="reset()">reset</button>
-                {{vals.killed}}
+                {{vals.isHeating ? 'fan' : 'no fan'}} &nbsp;
+                <button ng-show="vals.killed" class="btn btn-primary btn-block" ng-click="reset()">reset</button>
+                <button ng-hide="vals.killed" class="btn btn-danger btn-block" ng-click="kill()">kill</button>
             </div>
         </div>
 

@@ -69,6 +69,10 @@
             socket.emit('reset');
         };
 
+        self.kill = function () {
+            socket.emit('kill');
+        };
+
         return self;
     }]);
     
@@ -77,6 +81,7 @@
         $scope.settings = mainSrv.settings;
         $scope.reset = mainSrv.reset;
         $scope.sendSync = mainSrv.sendSync;
+        $scope.kill = mainSrv.kill;
     }]);
 }());
 

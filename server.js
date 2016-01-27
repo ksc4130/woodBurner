@@ -21,6 +21,10 @@ io.on('connection', function (socket) {
         reset = true;
         killed = false;
     });
+    socket.on('kill', function () {
+       killed = true;
+        reset = false;
+    });
     socket.on('disconnect', function () {
         var i = sockets.indexOf(socket);
         if(i > -1) {
