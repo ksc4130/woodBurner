@@ -114,7 +114,7 @@ function checkTarget () {
     if(killed)
         return;
 
-    if(tmp < (settings.targetTemp - settings.killThreshold)) {
+    if(!reset && tmp < (settings.targetTemp - settings.killThreshold)) {
          isHeating = false;
          killed = true;
          b.digitalWrite(outputPin, b.LOW);
@@ -125,6 +125,7 @@ function checkTarget () {
     } else if ((isHeating && tmp >= settings.targetTemp) || (!isHeating)){
         console.log('turn fan off');
         isHeating = false;
+        reset = false;
         b.digitalWrite(outputPin, b.LOW);
     }
 }
