@@ -1,7 +1,7 @@
 <doctype html>
 <html ng-app="app">
     <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
         <link rel="stylesheet" href="ngGauge.css">
         <style>
             body {
@@ -80,8 +80,8 @@
             .deneme strong { position: absolute; right: 6px; top: 25px; font-size: 34px; }
         </style>
     </head>
-    <body ng-cloak>
-        <div ng-controller="mainCtrl" class="row">
+    <body ng-controller="mainCtrl" ng-cloak>
+        <div class="row">
             <div class="col-md-6 col-md-offset-3">
                 <div ng-show="vals.tmp !== null" class="de">
                     <div class="den">
@@ -94,12 +94,24 @@
                       </div>
                     </div>
                 </div>
-                <!--{{vals.tmp ? vals.tmp + '&deg;' : ''}}-->
             </div>
 <!--            <div ng-show="vals.tmp !== null" class="col-md-6 col-md-offset-3">-->
 <!--                <canvas-gauge width="160" max="100" under-color="#EFEFEF" over-color="{{vals.color}}" value="vals.tmp" mask="(@)&deg;"-->
 <!--style="color: gray"></canvas-gauge>-->
 <!--            </div>-->
+        </div>
+        <br>
+        <br>
+   
+        <div ng-show="vals.tmp !== null" class="row">
+            <div class="col-md-6 col-md-offset-3">
+                {{vals.tmp ? vals.tmp + '&deg;' : ''}}
+                {{vals.isHeating ? 'fan' : 'no fan'}}
+            </div>
+            <!--<div class="col-md-6">-->
+            <!--    <input ng-model="vals.targetTemp">-->
+            <!--    <input ng-model="vals.threshold">-->
+            <!--</div>-->
         </div>
         
 

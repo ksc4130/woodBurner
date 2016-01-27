@@ -166,11 +166,13 @@
        var self = {
            tmp: null,
            color: 'purple',
-           max: null
+           max: null,
+           isHeating: null
        };
        socket.on('tmp', function (t) {
            console.log('tmp', t);
-          self.tmp = t; 
+          self.tmp = t.tmp;
+          self.isHeating = t.isHeating;
           self.max = self.max || parseInt(t) + 50;
           if(t > 74) {
               self.color = 'red';
