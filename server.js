@@ -22,8 +22,9 @@ io.on('connection', function (socket) {
         killed = false;
     });
     socket.on('kill', function () {
-       killed = true;
+        killed = true;
         reset = false;
+        b.digitalWrite(outputPin, b.LOW);
     });
     socket.on('disconnect', function () {
         var i = sockets.indexOf(socket);
