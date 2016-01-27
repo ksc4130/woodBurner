@@ -11,13 +11,14 @@ app.use(express.static(__dirname + '/public'));
 
 io.on('connection', function (socket) {
     sockets.push(socket);
+    socket.emit('sync', settings);
     socket.on('sync', function (data) {
-        targetTemp = data.targetTemp;
-        threshold = data.threshold;
-        killThreshold = data.killThreshold;
+        settings.targetTemp = data.targetTemp;
+        settings.threshold = data.threshold;
+        settings.killThreshold = data.killThreshold;
     });
     socket.on('reset', function () {
-       reset = true;
+        reset = true;
         killed = false;
     });
     socket.on('disconnect', function () {
@@ -46,9 +47,17 @@ var howMany = 10;
 var isHeating = false;
 var reset = false;
 var killed = false;
-var targetTemp = 83;
-var threshold = 10;
-var killThreshold = 30;
+var settings = {
+    targetTemp: 83,
+    threshold: 10,
+    killThreshold: 30
+};
+
+process.on('uncaughtException', function (err)  {
+    console.log('Caught exception:', err);
+    b.digitalWrite(outputPin, b.LOW);
+});
+
 
 b.pinMode(outputPin, b.OUTPUT);
 b.digitalWrite(outputPin, b.LOW);
@@ -101,19 +110,19 @@ function checkRead(x) {
 initRead();
 
 function checkTarget () {
-    console.log('check target', tmp < (targetTemp - threshold), tmp, targetTemp - threshold, typeof tmp, typeof targetTemp, typeof threshold);
+    console.log('check target', tmp < (settings.targetTemp - settings.threshold), tmp, settings.targetTemp - settings.threshold, typeof tmp, typeof settings.targetTemp, typeof settings.threshold);
     if(killed)
         return;
 
-    if(tmp < (targetTemp - killThreshold)) {
+    if(tmp < (settings.targetTemp - settings.killThreshold)) {
          isHeating = false;
          killed = true;
          b.digitalWrite(outputPin, b.LOW);
-     } else if(!isHeating && tmp < (targetTemp - threshold)) {
+     } else if(!isHeating && tmp < (settings.targetTemp - settings.threshold)) {
         console.log('turn fan on');
         isHeating = true;
         b.digitalWrite(outputPin, b.HIGH);
-    } else if ((isHeating && tmp >= targetTemp) || (!isHeating)){
+    } else if ((isHeating && tmp >= settings.targetTemp) || (!isHeating)){
         console.log('turn fan off');
         isHeating = false;
         b.digitalWrite(outputPin, b.LOW);
