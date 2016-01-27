@@ -25,6 +25,7 @@ io.on('connection', function (socket) {
         killed = true;
         reset = false;
         b.digitalWrite(outputPin, b.LOW);
+        isHeating = false;
     });
     socket.on('disconnect', function () {
         var i = sockets.indexOf(socket);
