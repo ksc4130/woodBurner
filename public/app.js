@@ -41,17 +41,18 @@
             }
         };
         socket.on('tmp', function (t) {
-           console.log('tmp', t);
-          self.vals.tmp = t.tmp;
-          self.vals.isHeating = t.isHeating;
-          self.vals.max = self.max || parseInt(t) + 50;
-          if(t > 74) {
+            console.log('tmp', t);
+            self.vals.tmp = t.tmp;
+            self.vals.isHeating = t.isHeating;
+            self.vals.max = self.max || parseInt(t) + 50;
+            self.vals.killed = t.killed;
+            if(t > 74) {
               self.vals.color = 'red';
-          } else if(t < 73) {
+            } else if(t < 73) {
               self.vals.color = 'blue';
-          } else {
+            } else {
               self.vals.color = 'purple';
-          }
+            }
         });
 
         socket.on('sync', function (data) {
