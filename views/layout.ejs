@@ -1,68 +1,84 @@
 <doctype html>
-<html ng-app="app">
+<html lang="en" ng-app="app">
     <head>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/sandstone/bootstrap.min.css">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <style>
-                @-webkit-keyframes rotate {
-                  from {
-                    -webkit-transform: rotate(0deg);
-                  }
-                  to {
-                    -webkit-transform: rotate(-360deg);
-                  }
-                }
-         
-                .rotating
-                {
-                    -webkit-animation-name:   rotate;
-                    -webkit-animation-duration:  .9s;
-                    -webkit-animation-iteration-count:  infinite;
-                    -webkit-animation-timing-function: linear;
-                }
+            body {
+                margin-top: 60px;
+            }
+            @-webkit-keyframes rotate {
+              from {
+                -webkit-transform: rotate(0deg);
+              }
+              to {
+                -webkit-transform: rotate(-360deg);
+              }
+            }
+     
+            .rotating
+            {
+                -webkit-animation-name:   rotate;
+                -webkit-animation-duration:  .9s;
+                -webkit-animation-iteration-count:  infinite;
+                -webkit-animation-timing-function: linear;
+            }
+            .text-head-1 {
+                font-size: 40px;
+            }
         </style>
     </head>
     <body ng-controller="mainCtrl" ng-cloak>
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <div ng-show="vals.tmp !== null" class="de">
-                    <h1>
-                        {{vals.tmp ? vals.tmp + '&deg;' : ''}}
-                        <div style="background-image: url('/img/thingyoutsidefan.png'); height: 100px; width: 100px; background-size: cover; z-index: 100; position: relative;">
-                            <div ng-class="{'rotating': vals.isHeating}" style="background-image: url('/img/fan.png'); position: absolute; left: 5px; top: 5px; height: 90px; width: 90px; background-size: cover; z-index: 3000">
-                            </div>
+        <div class="container">
+            <div ng-show="vals.tmp !== null" class="row">
+                <div class="col-md-1 col-xs-3">
+                    <div style="background-image: url('/img/thingyoutsidefan.png'); height: 80px; width: 80px; background-size: cover; z-index: 100; position: relative;">
+                        <div ng-class="{'rotating': vals.isHeating}" style="background-image: url('/img/fan.png'); position: absolute; left: 5px; top: 5px; height: 70px; width: 70px; background-size: cover; z-index: 3000">
                         </div>
-                    </h1>
+                    </div>
+                </div>
+                <div class="col-md-5 col-xs-9">
+                    <div class="text-head-1">
+                        &nbsp;<span>{{vals.tmp ? vals.tmp + '&deg;' : ''}}</span>
+                        <i class="fa fa-fire" ng-class="{'text-danger': vals.killed}"></i>
+                    </div>
+                    <button ng-show="vals.killed" class="btn btn-primary btn-block" ng-click="reset()">reset</button>
+                    <button ng-hide="vals.killed" class="btn btn-danger  btn-block" ng-click="kill()">kill</button>
+                </div>
+                 <div class="col-md-6">
+                    <form>
+                        <div class="form-group">
+                            <label>Target Temperature</label>
+                            <input type="number" ng-model="settings.targetTemp" class="form-control"  placeholder="Target Temperature">
+                        </div>
+                        <div class="form-group">
+                            <label>Threshold</label>
+                            <input type="number" ng-model="settings.threshold" class="form-control" placeholder="Threshold">
+                        </div>
+                        <div class="form-group">
+                            <label>Kill Threshold</label>
+                            <input type="number" ng-model="settings.killThreshold" class="form-control" placeholder="Kill Threshold">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Update Key</label>
+                            <input type="password" ng-model="settings.updateKey" class="form-control" placeholder="Update Key">
+                        </div>
+                        <button type="submit" ng-click="sendSync()" class="btn btn-default">Submit</button>
+                    </form>
                 </div>
             </div>
-        </div>
-        <br>
-        <br>
-   
-        <div ng-show="vals.tmp !== null" class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <button ng-show="vals.killed" class="btn btn-primary btn-block" ng-click="reset()">reset</button>
-                <button ng-hide="vals.killed" class="btn btn-danger btn-block" ng-click="kill()">kill</button>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <form>
-                    <div class="form-group">
-                        <label>Target Temperature</label>
-                        <input type="number" ng-model="settings.targetTemp" class="form-control"  placeholder="Target Temperature">
-                    </div>
-                    <div class="form-group">
-                        <label>Threshold</label>
-                        <input type="number" ng-model="settings.threshold" class="form-control" placeholder="Threshold">
-                    </div>
-                    <div class="form-group">
-                        <label>Kill Threshold</label>
-                        <input type="number" ng-model="settings.killThreshold" class="form-control" placeholder="Kill Threshold">
-                    </div>
-                    <button type="submit" ng-click="sendSync()" class="btn btn-default">Submit</button>
-                </form>
+            <br>
+            <br>
+       
+            <div ng-show="vals.tmp !== null" class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    
+                </div>
             </div>
         </div>
         

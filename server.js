@@ -1,3 +1,7 @@
+var fs = require('fs');
+var configFilePath = './config.json';
+var config = JSON.parse(fs.readFileSync(configFilePath));
+
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -10,12 +14,26 @@ app.set('views', __dirname + '/views/');
 app.use(express.static(__dirname + '/public'));
 
 io.on('connection', function (socket) {
-    sockets.push(socket);
-    socket.emit('sync', settings);
+    //sockets.push(socket);
+    
+    socket.emit('sync', config.settings);
+    
     socket.on('sync', function (data) {
-        settings.targetTemp = data.targetTemp;
-        settings.threshold = data.threshold;
-        settings.killThreshold = data.killThreshold;
+        if(data.updateKey === config.updateKey) {
+            config.settings.targetTemp = data.targetTemp;
+            config.settings.threshold = data.threshold;
+            config.settings.killThreshold = data.killThreshold;
+            
+            io.emit('sync', config.settings);
+            
+            delete data.updateKey;
+            
+            fs.writeFile(configFilePath, JSON.stringify(config), function (err) {
+                console.log('updated config file', err);
+            });
+        } else {
+           socket.emit('sync', config.settings); 
+        }
     });
     socket.on('reset', function () {
         reset = true;
@@ -53,11 +71,6 @@ var howMany = 10;
 var isHeating = false;
 var reset = false;
 var killed = false;
-var settings = {
-    targetTemp: 83,
-    threshold: 10,
-    killThreshold: 30
-};
 
 process.on('uncaughtException', function (err)  {
     console.log('Caught exception:', err);
@@ -87,26 +100,35 @@ function checkRead(x) {
 
     reads.push(temp_f);
 
-    if(reads.length >= howMany) {
+    if(reads.length >= howMany + 2) {
+        reads.sort(function (a, b) {
+          if (a < b) {
+            return -1;
+          }
+          if (a > b) {
+            return 1;
+          }
+          
+          return 0;
+        });
+        //drop lowest and highest read
+        reads = reads.splice(1, reads.length - 2);
+        
         var newTmp = (reads.reduce(function (a, b) {
             return a + b;
         })/reads.length).toFixed(1);
 
-        console.log('newTemp', newTmp);
-
         if(newTmp !== tmp) {
             tmp = parseFloat(newTmp);
-            for(var s in sockets) {
-                sockets[s].emit('tmp', {
-                    tmp: tmp.toFixed(1),
-                    isHeating: isHeating,
-                    killed: killed
-                });
-            }
+            io.emit('tmp', {
+                tmp: tmp.toFixed(1),
+                isHeating: isHeating,
+                killed: killed
+            });
+            
             checkTarget();
         }
         reads = [];
-        console.log(tmp, 'f');
     }
     setTimeout(function () {
         initRead();
@@ -116,20 +138,26 @@ function checkRead(x) {
 initRead();
 
 function checkTarget () {
-    console.log('check target', tmp < (settings.targetTemp - settings.threshold), tmp, settings.targetTemp - settings.threshold, typeof tmp, typeof settings.targetTemp, typeof settings.threshold);
     if(killed)
         return;
 
-    if(!reset && tmp < (settings.targetTemp - settings.killThreshold)) {
+    if(!reset && tmp < (config.settings.targetTemp - config.settings.killThreshold)) {
+         if(killed && !isHeating)
+            return;
+         console.log('kill', tmp)
          isHeating = false;
          killed = true;
          b.digitalWrite(outputPin, b.LOW);
-     } else if(!isHeating && tmp < (settings.targetTemp - settings.threshold)) {
-        console.log('turn fan on');
+     } else if(!isHeating && tmp < (config.settings.targetTemp - config.settings.threshold)) {
+        if(isHeating)
+            return;
+        console.log('turn fan on', tmp);
         isHeating = true;
         b.digitalWrite(outputPin, b.HIGH);
-    } else if ((isHeating && tmp >= settings.targetTemp) || (!isHeating)){
-        console.log('turn fan off');
+    } else if ((isHeating && tmp >= config.settings.targetTemp) || (!isHeating)){
+        if(!isHeating)
+            return;
+        console.log('turn fan off', tmp);
         isHeating = false;
         reset = false;
         b.digitalWrite(outputPin, b.LOW);
