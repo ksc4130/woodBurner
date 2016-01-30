@@ -89,6 +89,10 @@
         $scope.needle = function () {
           return 360 * (1-($scope.vals.tmp / 212));
         };
+        
+        $scope.targetNeedle = function () {
+          return 360 * (1-($scope.settings.targetTemp / 212));
+        };
         $scope.kill = mainSrv.kill;
     }]);
 }());

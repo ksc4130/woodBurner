@@ -34,7 +34,9 @@
 			<div class="flip-container" ng-class="{'turned': turnedAround}">
 				<div class="flipper">
 					<div class="front">
-						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" style="height: 20%; width: 4px; background-color: #222; position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
+						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" style="height: 20%; width: 4px; background-color: rgba(34, 34, 34, .7); position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
+						<div title="Target Temperature" ng-style="{transform: 'rotate('+targetNeedle()+'deg)'}" style="height: 20%; width: 4px; background-color: rgba(114, 205, 212, .8); position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
+						
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="-10 -10 220 220" style="margin-top: -10px">
 							<defs>
 								<linearGradient id="redyel" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
