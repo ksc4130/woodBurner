@@ -30,11 +30,11 @@
 	</nav>
 
 	<div ng-cloak style="margin-top: 50px">
-		<div class="col-lg-offset-3 col-lg-3 col-md-offset-2 col-md-4 col-sm-offset-1 col-sm-5 tile text-center" ng-class="{'tile-green': vals.isHeating, 'tile-red': !vals.isHeating}">
+		<div class="col-lg-offset-3 col-lg-3 col-md-offset-2 col-md-4 col-sm-offset-2 col-sm-4 tile text-center" ng-class="{'tile-green': vals.isHeating, 'tile-red': !vals.isHeating}">
 			<div class="flip-container" ng-class="{'turned': turnedAround}">
 				<div class="flipper">
 					<div class="front">
-						<div style="height: 20%; width: 4px; background-color: #222; position: absolute; left: 50%; margin-top: -20px; transform: rotate({{needle()}}deg); transform-origin: 2px 275%"></div>
+						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" style="height: 20%; width: 4px; background-color: #222; position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="-10 -10 220 220" style="margin-top: -10px">
 							<defs>
 								<linearGradient id="redyel" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
@@ -79,7 +79,8 @@
 
 						<div class="temp" style="background-color: #f7f7f7; border-radius: 100%; position: absolute; top: 50%; bottom: auto; left: 50%; transform: translateY(-50%) translateX(-50%);">
 							<label style="color: #c0c0c0;  font-weight: 400; margin-bottom: 0"><small>Target: {{settings.targetTemp}}&deg;</small></label>
-							<br><span class="temp-text">{{vals.tmp}}&deg;</span>
+							<br>
+							<span class="temp-text">{{vals.tmp}}&deg;</span>
 							<div ng-class="{'flame': vals.isHeating, 'no-flame': !vals.isHeating}"></div>
 						</div>
 					</div>
@@ -112,7 +113,7 @@
 			<div style="position: absolute; right: 0; bottom: 0; padding: 10px; cursor: pointer" ng-show="!turnedAround" ng-click="turnedAround = true"><i class="fa fa-2x fa-cog"></i></div>
 			<div style="position: absolute; right: 0; bottom: 0; padding: 10px; cursor: pointer" ng-show="turnedAround" ng-click="turnedAround = false"><i class="fa fa-2x fa-times"></i></div>
 		</div>
-		<div class="col-lg-3 col-md-4 col-sm-5 tile tile-blue text-center">
+		<div class="col-lg-3 col-md-4 col-sm-4 tile tile-blue text-center">
 			<div class="outside-fan" style="margin-left: auto; margin-right: auto">
 				<div ng-class="{'rotating': vals.isHeating}" class="inside-fan"></div>
 			</div><br><br>
