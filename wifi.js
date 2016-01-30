@@ -98,7 +98,7 @@ function checkConnected () {
                     console.log('up', stdout.toString());
                     setTimeout(function () {
                         checkConnected();
-                    }, 100);
+                    }, 60000);
                 })
             });
         } else {
