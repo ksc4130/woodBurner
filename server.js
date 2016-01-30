@@ -35,15 +35,19 @@ io.on('connection', function (socket) {
            socket.emit('sync', config.settings); 
         }
     });
-    socket.on('reset', function () {
-        reset = true;
-        killed = false;
+    socket.on('reset', function (data) {
+        if(data.updateKey === config.updateKey) {
+            reset = true;
+            killed = false;
+        }
     });
-    socket.on('kill', function () {
-        killed = true;
-        reset = false;
-        b.digitalWrite(outputPin, b.LOW);
-        isHeating = false;
+    socket.on('kill', function (data) {
+        if(data.updateKey === config.updateKey) {
+            killed = true;
+            reset = false;
+            b.digitalWrite(outputPin, b.LOW);
+            isHeating = false;
+        }
     });
     socket.on('disconnect', function () {
         var i = sockets.indexOf(socket);
