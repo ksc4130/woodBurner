@@ -19,6 +19,7 @@ io.on('connection', function (socket) {
     socket.emit('sync', config.settings);
     
     socket.on('sync', function (data) {
+        console.log('got sync', data);
         if(data.updateKey === config.updateKey) {
             config.settings.targetTemp = data.targetTemp;
             config.settings.threshold = data.threshold;
@@ -36,12 +37,14 @@ io.on('connection', function (socket) {
         }
     });
     socket.on('reset', function (data) {
+        console.log('got reset', data);
         if(data.updateKey === config.updateKey) {
             reset = true;
             killed = false;
         }
     });
     socket.on('kill', function (data) {
+        console.log('got kill', data);
         if(data.updateKey === config.updateKey) {
             killed = true;
             reset = false;

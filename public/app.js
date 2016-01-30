@@ -67,11 +67,11 @@
         };
 
         self.reset = function (updateKey) {
-            socket.emit('reset', {updateKey: updateKey});
+            socket.emit('reset', {updateKey: self.settings.updateKey});
         };
 
         self.kill = function (updateKey) {
-            socket.emit('kill', {updateKey: updateKey});
+            socket.emit('kill', {updateKey: self.settings.updateKey});
         };
 
         return self;
