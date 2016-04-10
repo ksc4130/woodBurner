@@ -1,16 +1,4 @@
-var _ = require('underscore');
 var exec = require('child_process').exec;
-
-// var child = exec('nodemon /var/lib/cloud9/woodBurner/server.js');
-// child.stdout.on('data', function(data) {
-//     console.log('stdout: ' + data);
-// });
-// child.stderr.on('data', function(data) {
-//     console.log('stdout: ' + data);
-// });
-// child.on('close', function(code) {
-//     console.log('closing code: ' + code);
-// });
 
 var http = require('http');
 var networks = [];
@@ -43,12 +31,8 @@ var cmds = {
 
 exec('sudo iwlist wlan0 scan', function(err, stdout, stderr) {
     networks = parseScan(stdout.toString());
-    //console.log(networks);
 });
 
-exec('sudo iwconfig :INTERFACE', function (err, stdout, stderr) {
-    console.log(stdout);
-});
 checkConnected();
 
 function checkConnected () {
@@ -84,7 +68,7 @@ function checkConnected () {
 
             if (network) {
                 curNetwork = network;
-                return;
+                //return;
             }
         } else {
             isConnected = false;
@@ -92,19 +76,22 @@ function checkConnected () {
         }
         
         if(!isConnected) {
+            console.log('*********not connected');
             exec('ifdown wlan0', function (err, stdout, stderr) {
                 console.log('down', stdout.toString());
                 exec('ifup wlan0', function (err, stdout, stderr) {
                     console.log('up', stdout.toString());
                     setTimeout(function () {
+                        console.log('checking after not connected');
                         checkConnected();
-                    }, 100);
+                    }, 10000);
                 })
             });
         } else {
+            console.log('connected', network);
             setTimeout(function () {
                 checkConnected();
-            }, 500);
+            }, 5000);
         }
     });
 }
@@ -112,15 +99,21 @@ function checkConnected () {
 function parseScan (scanResults) {
     var lines = scanResults.split(/\r\n|\r|\n/);
     var networkCount = 0;
+    var network = null;
     
-    networks = lines.map(function(line) {
+    lines.forEach(function(line) {
         line = line.replace(/^\s+|\s+$/g,"");
-
+        
         // a "Cell" line means that we've found a start of a new network
         if (line.indexOf('Cell') === 0) {
+            console.log('cell', line);
             networkCount++;
 
-            var network = {
+            if(network) {
+                networks.push(network);
+            }
+
+            network = {
                 //speeds: []
                 last_tick: 0,
                 encryption_any: false,
@@ -151,6 +144,7 @@ function parseScan (scanResults) {
                 network.encryption_wep = true;
             }
         } else if (line.indexOf('ESSID') === 0) {
+            console.log('essid', line.match(/ESSID:"(.*)"/)[1], network);
             network.ssid = line.match(/ESSID:"(.*)"/)[1];
         } else if (line.indexOf('Mode') === 0) {
             network.mode = line.match(/Mode:(.*)/)[1];
@@ -167,3 +161,4 @@ function parseScan (scanResults) {
 
     return networks;
 }
+

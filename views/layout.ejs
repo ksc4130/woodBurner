@@ -1,77 +1,144 @@
-<doctype html>
-<html ng-app="app">
-    <head>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,700italic,700,600italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 
-        <style>
-                @-webkit-keyframes rotate {
-                  from {
-                    -webkit-transform: rotate(0deg);
-                  }
-                  to {
-                    -webkit-transform: rotate(-360deg);
-                  }
-                }
-         
-                .rotating
-                {
-                    -webkit-animation-name:   rotate;
-                    -webkit-animation-duration:  .9s;
-                    -webkit-animation-iteration-count:  infinite;
-                    -webkit-animation-timing-function: linear;
-                }
-        </style>
-    </head>
-    <body ng-controller="mainCtrl" ng-cloak>
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <div ng-show="vals.tmp !== null" class="de">
-                    <h1>
-                        {{vals.tmp ? vals.tmp + '&deg;' : ''}}
-                        <div style="background-image: url('/img/thingyoutsidefan.png'); height: 100px; width: 100px; background-size: cover; z-index: 100; position: relative;">
-                            <div ng-class="{'rotating': vals.isHeating}" style="background-image: url('/img/fan.png'); position: absolute; left: 5px; top: 5px; height: 90px; width: 90px; background-size: cover; z-index: 3000">
-                            </div>
-                        </div>
-                    </h1>
-                </div>
-            </div>
-        </div>
-        <br>
-        <br>
-   
-        <div ng-show="vals.tmp !== null" class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <button ng-show="vals.killed" class="btn btn-primary btn-block" ng-click="reset()">reset</button>
-                <button ng-hide="vals.killed" class="btn btn-danger btn-block" ng-click="kill()">kill</button>
-            </div>
-        </div>
+	<style>
+		[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+			display: none !important;
+		}
+	</style>
 
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <form>
-                    <div class="form-group">
-                        <label>Target Temperature</label>
-                        <input type="number" ng-model="settings.targetTemp" class="form-control"  placeholder="Target Temperature">
-                    </div>
-                    <div class="form-group">
-                        <label>Threshold</label>
-                        <input type="number" ng-model="settings.threshold" class="form-control" placeholder="Threshold">
-                    </div>
-                    <div class="form-group">
-                        <label>Kill Threshold</label>
-                        <input type="number" ng-model="settings.killThreshold" class="form-control" placeholder="Kill Threshold">
-                    </div>
-                    <button type="submit" ng-click="sendSync()" class="btn btn-default">Submit</button>
-                </form>
-            </div>
-        </div>
-        
+</head>
+<body ng-controller="mainCtrl">
+	<nav class="navbar navbar-default navbar-inverse navbar-fixed-top text-center">
+		<nav id="main_navbar text-center">
+			<ul class="nav navbar-nav" style="float: none; margin-left: auto; margin-right: auto">
+				<li class="current">
+					<!-- Highlighted menu for current page -->
+					<a href="" id="homenav">Kyngster</a>
+				</li>
+			</ul>
+		</nav>
+	</nav>
 
-        <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.1/angular.min.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-        <scirpt src="ngGauge.js"></scirpt>
+	<div ng-cloak style="margin-top: 50px">
+		<div class="col-lg-offset-3 col-lg-3 col-md-offset-2 col-md-4 col-sm-offset-2 col-sm-4 tile text-center" ng-class="{'tile-green': vals.isHeating, 'tile-red': !vals.isHeating}">
+			<div class="flip-container" ng-class="{'turned': turnedAround}">
+				<div class="flipper">
+					<div class="front">
+						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" style="height: 20%; width: 4px; background-color: rgba(34, 34, 34, .7); position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
+						<div title="Target Temperature" ng-style="{transform: 'rotate('+targetNeedle()+'deg)'}" style="height: 20%; width: 4px; background-color: rgba(114, 205, 212, .8); position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
+						
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="-10 -10 220 220" style="margin-top: -10px">
+							<defs>
+								<linearGradient id="redyel" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
+									<stop offset="0%" stop-color="#FB5045"/>
+									<stop offset="100%" stop-color="#FB984E"/>
+								</linearGradient>
+								<linearGradient id="red" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0%" stop-color="#FB3737"/>
+									<stop offset="100%" stop-color="#FB5045"/>
+								</linearGradient>
+								<linearGradient id="yelgre" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
+									<stop offset="0%" stop-color="#FB984E"/>
+									<stop offset="100%" stop-color="#F8FB73"/>
+								</linearGradient>
+								<linearGradient id="grecya" gradientUnits="objectBoundingBox" x1="1" y1="1" x2="0" y2="0">
+									<stop offset="0%" stop-color="#F8FB73"/>
+									<stop offset="100%" stop-color="#77FBEA"/>
+								</linearGradient>
+								<linearGradient id="cyablu" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="0" y2="0">
+									<stop offset="0%" stop-color="#77FBEA"/>
+									<stop offset="100%" stop-color="#5D83FF"/>
+								</linearGradient>
+								<linearGradient id="blumag" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
+									<stop offset="0%" stop-color="#5D83FF"/>
+									<stop offset="100%" stop-color="#5D83FF"/>
+								</linearGradient>
+								<linearGradient id="magred" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
+									<stop offset="0%" stop-color="#5D83FF"/>
+									<stop offset="100%" stop-color="#5D83FF"/>
+								</linearGradient>
+							</defs>
 
-        <script src="/app.js"></script>
-    </body>
+							<g fill="none" stroke-width="15" transform="translate(100,100)">
+								<path d="M 0,-100 A 100,100 0 0,1 86.6,-50" stroke="url(#red)"/>
+								<path d="M 86.6,-50 A 100,100 0 0,1 86.6,50" stroke="url(#redyel)"/>
+								<path d="M 86.6,50 A 100,100 0 0,1 0,100" stroke="url(#yelgre)"/>
+								<path d="M 0,100 A 100,100 0 0,1 -86.6,50" stroke="url(#grecya)"/>
+								<path d="M -86.6,50 A 100,100 0 0,1 -86.6,-50" stroke="url(#cyablu)"/>
+								<path d="M -86.6,-50 A 100,100 0 0,1 0,-100" stroke="url(#blumag)"/>
+							</g>
+						</svg>
+
+						<div class="temp" style="background-color: #f7f7f7; border-radius: 100%; position: absolute; top: 50%; bottom: auto; left: 50%; transform: translateY(-50%) translateX(-50%);">
+							<label style="color: #c0c0c0;  font-weight: 400; margin-bottom: 0"><small>Target: {{settings.targetTemp}}&deg;</small></label>
+							<br>
+							<span class="temp-text">{{vals.tmp}}&deg;</span>
+							<div ng-class="{'flame': vals.isHeating, 'no-flame': !vals.isHeating}"></div>
+						</div>
+					</div>
+					<div class="back">
+						<h5 style="margin-top: 5px">SETTINGS</h5>
+						<form class="form-group" id="burningSettings" ng-submit="sendSync()">
+							<div class="form-group col-xs-6">
+								<label><small>Target Temp</small></label>
+								<input type="number" ng-model="settings.targetTemp" class="form-control text-center" placeholder="130&deg;">
+							</div>
+							<div class="form-group col-xs-6">
+								<label><small>Threshold</small></label>
+								<input type="number" ng-model="settings.threshold" class="form-control text-center" placeholder="50&deg;">
+							</div>
+							<div class="form-group col-xs-6">
+								<label><small>Kill Threshold</small></label>
+								<input type="number" ng-model="settings.killThreshold" class="form-control text-center" placeholder="110&deg;">
+							</div>
+							<div class="form-group col-xs-6">
+								<label><small>Update Key</small></label>
+								<input type="password" ng-model="settings.updateKey" class="form-control text-center" placeholder="PIN">
+							</div>
+							<div class="clearfix"></div>
+							<button type="reset" ng-click="settings = {}" class="btn btn-default" style="margin-bottom: 10px; margin-right: 10px;">Reset</button>
+							<button type="submit" class="btn btn-success" style="margin-bottom: 10px; margin-right: 10px;">Submit</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div style="position: absolute; right: 0; bottom: 0; padding: 10px; cursor: pointer" ng-show="!turnedAround" ng-click="turnedAround = true"><i class="fa fa-2x fa-cog"></i></div>
+			<div style="position: absolute; right: 0; bottom: 0; padding: 10px; cursor: pointer" ng-show="turnedAround" ng-click="turnedAround = false"><i class="fa fa-2x fa-times"></i></div>
+		</div>
+		<div class="col-lg-3 col-md-4 col-sm-4 tile tile-blue text-center">
+			<div class="outside-fan" style="margin-left: auto; margin-right: auto">
+				<div ng-class="{'rotating': vals.isHeating}" class="inside-fan"></div>
+			</div><br><br>
+			<button class="btn btn-lg btn-default btn-danger" ng-click="kill()" ng-show="!vals.killed">DISABLE</button>
+			<button class="btn btn-lg btn-default btn-primary" ng-click="reset()" ng-show="vals.killed">ENABLE</button>
+		
+		</div>
+	</div>
+	<div class="clearfix"></div>
+
+
+
+<footer class="text-center">
+	<p style="color: #fff">Kyle Curren &copy; {{copyright | date:'yyyy'}}</p>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.1/angular.min.js"></script>
+    <scirpt src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.min.js"></scirpt>
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script src="/app.js"></script>
+
+</body>
+
 </html>
