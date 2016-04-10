@@ -46,6 +46,7 @@ server.listen(4000, function () {
 var b = require('bonescript');
 var inputPin = 'P9_40';
 var outputPin = 'P8_13';
+var btnToggleFan = 'P8_14';
 var tmp;
 var reads = [];
 var howMany = 10;
@@ -66,7 +67,26 @@ process.on('uncaughtException', function (err)  {
 
 
 b.pinMode(outputPin, b.OUTPUT);
+b.pinMode(btnToggleFan, b.INPUT);
 b.digitalWrite(outputPin, b.LOW);
+
+function checkButton(x) {
+    if(x.value == 1){
+        //do work
+        reset = !reset;
+        killed = !killed;
+        setTimeout(function () {
+            b.digitalRead(btnToggleFan, checkButton);
+        }, 100);
+    }
+    else{
+        setTimeout(function () {
+            b.digitalRead(btnToggleFan, checkButton);
+        }, 20);
+    }
+}
+
+b.digitalRead(btnToggleFan, checkButton);
 
 function initRead() {
     b.analogRead(inputPin, checkRead);
