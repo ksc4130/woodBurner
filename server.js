@@ -36,18 +36,18 @@ io.on('connection', function (socket) {
            socket.emit('sync', config.settings); 
         }
     });
-    socket.on('reset', function (data) {
-        console.log('got reset', data);
+    socket.on('config.settings.reset', function (data) {
+        console.log('got config.settings.reset', data);
         if(data.updateKey === config.updateKey) {
-            reset = true;
-            killed = false;
+            config.settings.reset = true;
+            config.settings.killed = false;
         }
     });
     socket.on('kill', function (data) {
         console.log('got kill', data);
         if(data.updateKey === config.updateKey) {
-            killed = true;
-            reset = false;
+            config.settings.killed = true;
+            config.settings.reset = false;
             b.digitalWrite(outputPin, b.LOW);
             isHeating = false;
         }
@@ -77,8 +77,8 @@ var reads = [];
 var howMany = 10;
 
 var isHeating = false;
-var reset = false;
-var killed = false;
+config.settings.reset = config.settings.reset || false;
+config.settings.killed = config.settings.killed || false;
 
 process.on('uncaughtException', function (err)  {
     console.log('Caught exception:', err);
@@ -93,8 +93,8 @@ b.digitalWrite(outputPin, b.LOW);
 function checkButton(x) {
     if(x.value == 1){
         //do work
-        reset = !reset;
-        killed = !killed;
+        config.settings.reset = !config.settings.reset;
+        config.settings.killed = !config.settings.killed;
         setTimeout(function () {
             b.digitalRead(btnToggleFan, checkButton);
         }, 100);
@@ -150,7 +150,7 @@ function checkRead(x) {
             io.emit('tmp', {
                 tmp: tmp.toFixed(1),
                 isHeating: isHeating,
-                killed: killed
+                config.settings.killed: config.settings.killed
             });
             
             checkTarget();
@@ -165,15 +165,15 @@ function checkRead(x) {
 initRead();
 
 function checkTarget () {
-    if(killed)
+    if(config.settings.killed)
         return;
 
-    if(!reset && tmp < (config.settings.targetTemp - config.settings.killThreshold)) {
-         if(killed && !isHeating)
+    if(!config.settings.reset && tmp < (config.settings.targetTemp - config.settings.killThreshold)) {
+         if(config.settings.killed && !isHeating)
             return;
          console.log('kill', tmp)
          isHeating = false;
-         killed = true;
+         config.settings.killed = true;
          b.digitalWrite(outputPin, b.LOW);
      } else if(!isHeating && tmp < (config.settings.targetTemp - config.settings.threshold)) {
         if(isHeating)
@@ -186,7 +186,7 @@ function checkTarget () {
             return;
         console.log('turn fan off', tmp);
         isHeating = false;
-        reset = false;
+        config.settings.reset = false;
         b.digitalWrite(outputPin, b.LOW);
     }
 }
