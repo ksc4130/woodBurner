@@ -150,7 +150,7 @@ function checkRead(x) {
             io.emit('tmp', {
                 tmp: tmp.toFixed(1),
                 isHeating: isHeating,
-                config.settings.killed: config.settings.killed
+                killed: config.settings.killed
             });
             
             checkTarget();
@@ -171,7 +171,7 @@ function checkTarget () {
     if(!config.settings.reset && tmp < (config.settings.targetTemp - config.settings.killThreshold)) {
          if(config.settings.killed && !isHeating)
             return;
-         console.log('kill', tmp)
+         console.log('kill', tmp);
          isHeating = false;
          config.settings.killed = true;
          b.digitalWrite(outputPin, b.LOW);
