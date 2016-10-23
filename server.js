@@ -1,3 +1,6 @@
+console.log('console log');
+process.stdout.write('std out');
+
 var fs = require('fs');
 var configFilePath = './config.json';
 var config = JSON.parse(fs.readFileSync(configFilePath));
@@ -65,7 +68,9 @@ app.get('/', function (req, res) {
 });
 
 server.listen(4000, function () {
-    
+    console.log('server listening on port 4000');
+    process.stdout.wirte('server listening on port 4000');
+
 });
 
 var b = require('bonescript');
