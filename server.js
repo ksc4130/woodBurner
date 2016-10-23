@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
            socket.emit('sync', config.settings); 
         }
     });
-    socket.on('config.settings.reset', function (data) {
+    socket.on('reset', function (data) {
         console.log('got config.settings.reset', data);
         if(data.updateKey === config.updateKey) {
             config.settings.reset = true;
