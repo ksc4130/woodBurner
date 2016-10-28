@@ -69,126 +69,129 @@ server.listen(4000, function () {
     console.log('server listening on port 4000');
 });
 
-var b = require('bonescript');
-var inputPin = 'P9_40';
-var outputPin = 'P8_13';
-var btnToggleFan = 'P8_14';
-var tmp;
-var reads = [];
-var howMany = 10;
+if(process.env.NODE_ENV !== 'front') {
 
-var isHeating = false;
-config.settings.reset = config.settings.reset || false;
-config.settings.killed = config.settings.killed || false;
+    var b = require('bonescript');
+    var inputPin = 'P9_40';
+    var outputPin = 'P8_13';
+    var btnToggleFan = 'P8_14';
+    var tmp;
+    var reads = [];
+    var howMany = 10;
 
-process.on('uncaughtException', function (err)  {
-    console.log('Caught exception:', err);
+    var isHeating = false;
+    config.settings.reset = config.settings.reset || false;
+    config.settings.killed = config.settings.killed || false;
+
+    process.on('uncaughtException', function (err)  {
+        console.log('Caught exception:', err);
+        b.digitalWrite(outputPin, b.LOW);
+    });
+
+
+    b.pinMode(outputPin, b.OUTPUT);
+    b.pinMode(btnToggleFan, b.INPUT);
     b.digitalWrite(outputPin, b.LOW);
-});
 
-
-b.pinMode(outputPin, b.OUTPUT);
-b.pinMode(btnToggleFan, b.INPUT);
-b.digitalWrite(outputPin, b.LOW);
-
-function checkButton(x) {
-    if(x.value == 1){
-        //do work
-        config.settings.reset = !config.settings.reset;
-        config.settings.killed = !config.settings.killed;
-        setTimeout(function () {
-            b.digitalRead(btnToggleFan, checkButton);
-        }, 100);
+    function checkButton(x) {
+        if(x.value == 1){
+            //do work
+            config.settings.reset = !config.settings.reset;
+            config.settings.killed = !config.settings.killed;
+            setTimeout(function () {
+                b.digitalRead(btnToggleFan, checkButton);
+            }, 100);
+        }
+        else{
+            setTimeout(function () {
+                b.digitalRead(btnToggleFan, checkButton);
+            }, 20);
+        }
     }
-    else{
-        setTimeout(function () {
-            b.digitalRead(btnToggleFan, checkButton);
-        }, 20);
+
+    b.digitalRead(btnToggleFan, checkButton);
+
+    function initRead() {
+        b.analogRead(inputPin, checkRead);
     }
-}
 
-b.digitalRead(btnToggleFan, checkButton);
+    function checkRead(x) {
+        if(x.err) {
+            console.log(x.err);
+            setTimeout(function () {
+                initRead();
+            }, 100);
+            return;
+        }
 
-function initRead() {
-    b.analogRead(inputPin, checkRead);
-}
-    
-function checkRead(x) {
-    if(x.err) {
-        console.log(x.err);
+        var millivolts = x.value * 1800;  // 1.8V reference = 1800 mV
+        var temp_c = (millivolts - 500) / 10;
+        var temp_f = (temp_c * 9/5) + 32;
+
+        reads.push(temp_f);
+
+        if(reads.length >= howMany + 2) {
+            reads.sort(function (a, b) {
+                if (a < b) {
+                    return -1;
+                }
+                if (a > b) {
+                    return 1;
+                }
+
+                return 0;
+            });
+            //drop lowest and highest read
+            reads = reads.splice(1, reads.length - 2);
+
+            var newTmp = (reads.reduce(function (a, b) {
+                return a + b;
+            })/reads.length).toFixed(1);
+
+            if(newTmp !== tmp) {
+                tmp = parseFloat(newTmp);
+                io.emit('tmp', {
+                    tmp: tmp.toFixed(1),
+                    isHeating: isHeating,
+                    killed: config.settings.killed
+                });
+
+                checkTarget();
+            }
+            reads = [];
+        }
         setTimeout(function () {
             initRead();
         }, 100);
-        return;
     }
 
-    var millivolts = x.value * 1800;  // 1.8V reference = 1800 mV
-    var temp_c = (millivolts - 500) / 10;
-    var temp_f = (temp_c * 9/5) + 32;
+    initRead();
 
-    reads.push(temp_f);
+    function checkTarget () {
+        if(config.settings.killed)
+            return;
 
-    if(reads.length >= howMany + 2) {
-        reads.sort(function (a, b) {
-          if (a < b) {
-            return -1;
-          }
-          if (a > b) {
-            return 1;
-          }
-          
-          return 0;
-        });
-        //drop lowest and highest read
-        reads = reads.splice(1, reads.length - 2);
-        
-        var newTmp = (reads.reduce(function (a, b) {
-            return a + b;
-        })/reads.length).toFixed(1);
-
-        if(newTmp !== tmp) {
-            tmp = parseFloat(newTmp);
-            io.emit('tmp', {
-                tmp: tmp.toFixed(1),
-                isHeating: isHeating,
-                killed: config.settings.killed
-            });
-            
-            checkTarget();
+        if(!config.settings.reset && tmp < (config.settings.targetTemp - config.settings.killThreshold)) {
+            if(config.settings.killed && !isHeating)
+                return;
+            console.log('kill', tmp);
+            isHeating = false;
+            config.settings.killed = true;
+            b.digitalWrite(outputPin, b.LOW);
+        } else if(!isHeating && tmp < (config.settings.targetTemp - config.settings.threshold)) {
+            if(isHeating)
+                return;
+            console.log('turn fan on', tmp);
+            isHeating = true;
+            b.digitalWrite(outputPin, b.HIGH);
+        } else if ((isHeating && tmp >= config.settings.targetTemp) || (!isHeating)){
+            if(!isHeating)
+                return;
+            console.log('turn fan off', tmp);
+            isHeating = false;
+            config.settings.reset = false;
+            b.digitalWrite(outputPin, b.LOW);
         }
-        reads = [];
-    }
-    setTimeout(function () {
-        initRead();
-    }, 100);
-}
-
-initRead();
-
-function checkTarget () {
-    if(config.settings.killed)
-        return;
-
-    if(!config.settings.reset && tmp < (config.settings.targetTemp - config.settings.killThreshold)) {
-         if(config.settings.killed && !isHeating)
-            return;
-         console.log('kill', tmp);
-         isHeating = false;
-         config.settings.killed = true;
-         b.digitalWrite(outputPin, b.LOW);
-     } else if(!isHeating && tmp < (config.settings.targetTemp - config.settings.threshold)) {
-        if(isHeating)
-            return;
-        console.log('turn fan on', tmp);
-        isHeating = true;
-        b.digitalWrite(outputPin, b.HIGH);
-    } else if ((isHeating && tmp >= config.settings.targetTemp) || (!isHeating)){
-        if(!isHeating)
-            return;
-        console.log('turn fan off', tmp);
-        isHeating = false;
-        config.settings.reset = false;
-        b.digitalWrite(outputPin, b.LOW);
     }
 }
 
