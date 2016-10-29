@@ -6,13 +6,10 @@
         -webkit-transform: rotate(-360deg);
     }
 }
-html{
-    background: #222;
-}
 
 body {
      font-family: 'Open Sans', sans-serif;
-     background-color: #222;
+     background-color: #333;
  }
 
 .pointer {
@@ -40,6 +37,7 @@ body {
     border: none;
     background-color: #000;
 }
+
 .navbar-inverse .row::after {
     content: ' ';
     width: 300px;
@@ -61,10 +59,16 @@ body {
 }
 .tile {
     padding: 50px 25px;
-    border: 10px solid #222;
+    border: 10px solid #333;
     height: 425px;
 
 }
+
+label {
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+
 @media(min-width: 1600px){
     .tile{
         height: 450px;
@@ -120,7 +124,7 @@ body {
     height: 5em;
     width: 5em;
     background-size: cover;
-    z-index: 3000;
+    z-index: 150;
 }
 button.btn.btn-primary.settings {
     border: none;
@@ -137,6 +141,7 @@ button.btn.btn-primary.settings i {
 }
 .flip-container.turned .flipper {
     transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg);
 }
 .back, .flip-container, .front {
     width: 100%;
@@ -149,6 +154,7 @@ button.btn.btn-primary.settings i {
 .back, .front {
     background: #f7f7f7;
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     position: absolute;
     top: 0;
     left: 0;
@@ -162,11 +168,13 @@ button.btn.btn-primary.settings i {
 }
 
 .front {
-    z-index: 2;
+    /*z-index: 2;*/
     transform: rotateY(0deg);
+    -webkit-transform:rotateY(0deg);
 }
 .back {
     transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg);
 }
 #burningSettings label {
     font-weight: 400;
@@ -178,6 +186,6 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    background: #222;
-    z-index: 140;
+    background: #333;
+    z-index: 200;
 }
