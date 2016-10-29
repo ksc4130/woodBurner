@@ -140,7 +140,6 @@ button.btn.btn-primary.settings i {
 }
 .back, .flip-container, .front {
     width: 100%;
-    background: #f7f7f7;
 }
 .flipper {
     transition: .6s;
@@ -148,6 +147,7 @@ button.btn.btn-primary.settings i {
     position: relative;
 }
 .back, .front {
+    background: #f7f7f7;
     backface-visibility: hidden;
     position: absolute;
     top: 0;
@@ -179,4 +179,5 @@ footer {
     bottom: 0;
     width: 100%;
     background: #222;
+    z-index: 140;
 }
