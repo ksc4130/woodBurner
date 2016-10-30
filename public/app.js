@@ -1,5 +1,5 @@
 (function () {
-    var app = angular.module('app', []);
+    var app = angular.module('app', ['angular-svg-round-progressbar']);
     
     app.factory('socket', function ($rootScope) {
       var socket = io.connect();

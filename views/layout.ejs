@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/style.css">
-	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=Lato:100,300,400" rel="stylesheet">
 
 	<style>
 		[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
@@ -42,51 +41,59 @@
 			<div class="flip-container" ng-class="{'turned': turnedAround}">
 				<div class="flipper">
 					<div class="front">
-						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" class="temp-needle"></div>
-						<div title="Target Temperature" ng-style="{transform: 'rotate('+targetNeedle()+'deg)'}" class="temp-target"></div>
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="-10 -10 220 220" style="margin-top: -10px">
-							<defs>
+						<!--<div ng-style="{transform: 'rotate('+needle()+'deg)'}" class="temp-needle"></div>-->
+						<!--<div title="Target Temperature" ng-style="{transform: 'rotate('+targetNeedle()+'deg)'}" class="temp-target"></div>-->
+						<round-progress max="300" current="vals.tmp" color="url(#redyel)" bgcolor="#eaeaea" radius="100" stroke="20" semi="false" rounded="true" clockwise="true" responsive="true" duration="800" animation="easeInOutQuart" animation-delay="0">
+							<svg>
 								<linearGradient id="redyel" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
-									<stop offset="0%" stop-color="#FB5045"/>
-									<stop offset="100%" stop-color="#FB984E"/>
-								</linearGradient>
-								<linearGradient id="red" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
-									<stop offset="0%" stop-color="#FB3737"/>
+									<stop offset="0%" stop-color="#5D83FF"/>
 									<stop offset="100%" stop-color="#FB5045"/>
 								</linearGradient>
-								<linearGradient id="yelgre" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
-									<stop offset="0%" stop-color="#FB984E"/>
-									<stop offset="100%" stop-color="#F8FB73"/>
-								</linearGradient>
-								<linearGradient id="grecya" gradientUnits="objectBoundingBox" x1="1" y1="1" x2="0" y2="0">
-									<stop offset="0%" stop-color="#F8FB73"/>
-									<stop offset="100%" stop-color="#77FBEA"/>
-								</linearGradient>
-								<linearGradient id="cyablu" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="0" y2="0">
-									<stop offset="0%" stop-color="#77FBEA"/>
-									<stop offset="100%" stop-color="#5D83FF"/>
-								</linearGradient>
-								<linearGradient id="blumag" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
-									<stop offset="0%" stop-color="#5D83FF"/>
-									<stop offset="100%" stop-color="#5D83FF"/>
-								</linearGradient>
-								<linearGradient id="magred" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
-									<stop offset="0%" stop-color="#5D83FF"/>
-									<stop offset="100%" stop-color="#5D83FF"/>
-								</linearGradient>
-							</defs>
+							</svg>
+						</round-progress>
+						<!--<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="-10 -10 220 220" style="margin-top: -10px">-->
+							<!--<defs>-->
+								<!--<linearGradient id="redyel" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">-->
+									<!--<stop offset="0%" stop-color="#FB5045"/>-->
+									<!--<stop offset="100%" stop-color="#FB984E"/>-->
+								<!--</linearGradient>-->
+								<!--<linearGradient id="red" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">-->
+									<!--<stop offset="0%" stop-color="#FB3737"/>-->
+									<!--<stop offset="100%" stop-color="#FB5045"/>-->
+								<!--</linearGradient>-->
+								<!--<linearGradient id="yelgre" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">-->
+									<!--<stop offset="0%" stop-color="#FB984E"/>-->
+									<!--<stop offset="100%" stop-color="#F8FB73"/>-->
+								<!--</linearGradient>-->
+								<!--<linearGradient id="grecya" gradientUnits="objectBoundingBox" x1="1" y1="1" x2="0" y2="0">-->
+									<!--<stop offset="0%" stop-color="#F8FB73"/>-->
+									<!--<stop offset="100%" stop-color="#77FBEA"/>-->
+								<!--</linearGradient>-->
+								<!--<linearGradient id="cyablu" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="0" y2="0">-->
+									<!--<stop offset="0%" stop-color="#77FBEA"/>-->
+									<!--<stop offset="100%" stop-color="#5D83FF"/>-->
+								<!--</linearGradient>-->
+								<!--<linearGradient id="blumag" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">-->
+									<!--<stop offset="0%" stop-color="#5D83FF"/>-->
+									<!--<stop offset="100%" stop-color="#5D83FF"/>-->
+								<!--</linearGradient>-->
+								<!--<linearGradient id="magred" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">-->
+									<!--<stop offset="0%" stop-color="#5D83FF"/>-->
+									<!--<stop offset="100%" stop-color="#5D83FF"/>-->
+								<!--</linearGradient>-->
+							<!--</defs>-->
 
-							<g fill="none" stroke-width="15" transform="translate(100,100)">
-								<path d="M 0,-100 A 100,100 0 0,1 86.6,-50" stroke="url(#red)"/>
-								<path d="M 86.6,-50 A 100,100 0 0,1 86.6,50" stroke="url(#redyel)"/>
-								<path d="M 86.6,50 A 100,100 0 0,1 0,100" stroke="url(#yelgre)"/>
-								<path d="M 0,100 A 100,100 0 0,1 -86.6,50" stroke="url(#grecya)"/>
-								<path d="M -86.6,50 A 100,100 0 0,1 -86.6,-50" stroke="url(#cyablu)"/>
-								<path d="M -86.6,-50 A 100,100 0 0,1 0,-100" stroke="url(#blumag)"/>
-							</g>
-						</svg>
+							<!--<g fill="none" stroke-width="15" transform="translate(100,100)">-->
+								<!--<path d="M 0,-100 A 100,100 0 0,1 86.6,-50" stroke="url(#red)"/>-->
+								<!--<path d="M 86.6,-50 A 100,100 0 0,1 86.6,50" stroke="url(#redyel)"/>-->
+								<!--<path d="M 86.6,50 A 100,100 0 0,1 0,100" stroke="url(#yelgre)"/>-->
+								<!--<path d="M 0,100 A 100,100 0 0,1 -86.6,50" stroke="url(#grecya)"/>-->
+								<!--<path d="M -86.6,50 A 100,100 0 0,1 -86.6,-50" stroke="url(#cyablu)"/>-->
+								<!--<path d="M -86.6,-50 A 100,100 0 0,1 0,-100" stroke="url(#blumag)"/>-->
+							<!--</g>-->
+						<!--</svg>-->
 						<div class="temp">
-							<span class="temp-text">{{vals.tmp}}&deg;</span>
+							<span class="temp-text">10{{vals.tmp}}&deg;</span>
 							<div class="outside-fan" style="margin-left: auto; margin-right: auto">
 								<div ng-class="{'rotating': vals.isHeating}" class="inside-fan"></div>
 							</div>
@@ -141,13 +148,14 @@
 		<div class="pointer" ng-show="turnedAround" ng-click="turnedAround = false"><i class="fa fa-times"></i><br>Cancel</div>
 	</div>
 	<div class="clearfix"></div>
-	<footer class="text-center">
+	<footer class="text-center" ng-cloak>
 		<p>ksc4130 &amp; rconner614 &copy; {{copyright | date:'yyyy'}}</p>
 	</footer>
 
     <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.1/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-svg-round-progressbar/0.4.4/roundProgress.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     
     <script src="/app.js"></script>
