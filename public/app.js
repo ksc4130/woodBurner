@@ -77,7 +77,7 @@
         return self;
     }]);
     
-    app.controller('mainCtrl', ['$scope', 'mainSrv', function ($scope, mainSrv) {
+    app.controller('mainCtrl', ['$scope', 'mainSrv', '$timeout', function ($scope, mainSrv, $timeout) {
         $scope.copyright = new Date();
         $scope.vals = mainSrv.vals;
         $scope.settings = mainSrv.settings;
@@ -86,6 +86,16 @@
            mainSrv.sendSync();
            $scope.turnedAround = false;
         };
+        $scope.fanCheck = function(){
+            $timeout(function(){
+                if($scope.vals.killed){
+                    mainSrv.kill();
+                } else {
+                    mainSrv.reset();
+                }
+            }, 400);
+        };
+
         $scope.needle = function () {
           return 360 * (1-($scope.vals.tmp / 212));
         };

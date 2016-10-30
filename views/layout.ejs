@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,700italic,700,600italic' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 
 	<style>
@@ -18,25 +18,32 @@
 
 </head>
 <body ng-controller="mainCtrl">
-	<nav class="navbar navbar-default navbar-inverse navbar-fixed-top text-center">
-		<nav id="main_navbar text-center">
-			<ul class="nav navbar-nav" style="float: none; margin-left: auto; margin-right: auto">
-				<li class="current">
-					<!-- Highlighted menu for current page -->
-					<a href="" id="homenav">Kyngster</a>
-				</li>
-			</ul>
+	<nav class="navbar navbar-default navbar navbar-fixed-top text-center">
+		<nav id="text-center">
+			<a class="navbar-brand" style="float: none; line-height: 45px; margin-right: -55px" href="#">Smart House App</a>
+			<div class="navbar-header pull-right">
+				<button type="button" class="navbar-toggle collapsed" ng-click="showMenu = !showMenu">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div ng-class="{'collapse': !showMenu}" class="navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Wood Burner</a></li>
+					<li><a href="#">Water Pump</a></li>
+				</ul>
+			</div>
 		</nav>
 	</nav>
 
-	<div ng-cloak style="margin-top: 50px; min-height: 100vh">
-		<div class="col-lg-offset-3 col-lg-3 col-md-offset-2 col-md-4 col-sm-offset-2 col-sm-4 tile text-center" ng-class="{'tile-green': vals.isHeating, 'tile-red': !vals.isHeating}">
+	<div ng-cloak class="page">
+		<div class="tile text-center">
 			<div class="flip-container" ng-class="{'turned': turnedAround}">
 				<div class="flipper">
 					<div class="front">
-						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" style="height: 20%; width: 4px; background-color: rgba(34, 34, 34, .7); position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
-						<div title="Target Temperature" ng-style="{transform: 'rotate('+targetNeedle()+'deg)'}" style="height: 20%; width: 4px; background-color: rgba(114, 205, 212, .8); position: absolute; left: 50%; margin-top: -20px; transform-origin: 2px 275%"></div>
-
+						<div ng-style="{transform: 'rotate('+needle()+'deg)'}" class="temp-needle"></div>
+						<div title="Target Temperature" ng-style="{transform: 'rotate('+targetNeedle()+'deg)'}" class="temp-target"></div>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="-10 -10 220 220" style="margin-top: -10px">
 							<defs>
 								<linearGradient id="redyel" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">
@@ -78,64 +85,69 @@
 								<path d="M -86.6,-50 A 100,100 0 0,1 0,-100" stroke="url(#blumag)"/>
 							</g>
 						</svg>
-
-						<div class="temp" style="background-color: #f7f7f7; border-radius: 100%; position: absolute; top: 50%; bottom: auto; left: 50%; transform: translateY(-50%) translateX(-50%);">
-							<label style="color: #c0c0c0;  font-weight: 400; margin-bottom: 0"><small>Target: {{settings.targetTemp}}&deg;</small></label>
-							<br>
+						<div class="temp">
 							<span class="temp-text">{{vals.tmp}}&deg;</span>
-							<div ng-class="{'flame': vals.isHeating, 'no-flame': !vals.isHeating}"></div>
+							<div class="outside-fan" style="margin-left: auto; margin-right: auto">
+								<div ng-class="{'rotating': vals.isHeating}" class="inside-fan"></div>
+							</div>
 						</div>
 						<div class="clearfix"></div>
+						<div style="width: 50%; margin-left: 40%; margin-top: 2em;">
+							<div class="switch">
+								<input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-model="vals.killed" ng-change="fanCheck()">
+								<label for="cmn-toggle-1"></label>
+							</div>
+						</div>
+						<p ng-class="{'disabled': vals.killed}" style="margin-top: .75em;">Fan <span ng-show="vals.killed">Disabled</span><span ng-hide="vals.killed">Enabled</span></p>
 					</div>
 					<div class="back">
 						<h5 style="margin-top: 5px">SETTINGS</h5>
 						<form class="form-group" id="burningSettings" ng-submit="sendSync()">
 							<div class="col-sm-6 col-xs-12">
 								<label><small>Target Temp</small></label>
-								<input type="number" ng-model="settings.targetTemp" class="form-control text-center" placeholder="130&deg;">
+								<input type="number" ng-model="settings.targetTemp" class="form-control input-lg text-center" placeholder="130&deg;">
 							</div>
 							<div class="col-sm-6 col-xs-12">
 								<label><small>Threshold</small></label>
-								<input type="number" ng-model="settings.threshold" class="form-control text-center" placeholder="50&deg;">
+								<input type="number" ng-model="settings.threshold" class="form-control input-lg text-center" placeholder="50&deg;">
 							</div>
 							<div class="col-sm-6 col-xs-12">
 								<label><small>Kill Threshold</small></label>
-								<input type="number" ng-model="settings.killThreshold" class="form-control text-center" placeholder="110&deg;">
+								<input type="number" ng-model="settings.killThreshold" class="form-control input-lg text-center" placeholder="110&deg;">
 							</div>
 							<div class="form-group col-sm-6 col-xs-12">
 								<label><small>Update Key</small></label>
-								<input type="password" ng-model="settings.updateKey" class="form-control text-center" placeholder="PIN">
+								<input type="password" ng-model="settings.updateKey" class="form-control input-lg text-center" placeholder="PIN">
 							</div>
 							<div class="clearfix"></div>
-							<button type="reset" ng-click="settings = {}" class="btn btn-default" style="margin-bottom: 10px; margin-right: 10px;">Reset</button>
-							<button type="submit" class="btn btn-success" style="margin-bottom: 10px; margin-right: 10px;">Submit</button>
+							<div class="col-sm-12">
+								<button type="submit" class="btn btn-success btn-lg" style="width: 100%">Submit</button>
+								<div class="clearfix"></div><br>
+								<button type="reset" ng-click="settings = {}" class="btn btn-default" style="border: none !important">Reset</button>
+							</div>
 						</form>
 					</div>
 				</div>
 			</div>
-			<div class="cog-toggler pointer" ng-show="!turnedAround" ng-click="turnedAround = true"><i class="fa fa-2x fa-cog"></i></div>
-			<div class="cog-toggler pointer" ng-show="turnedAround" ng-click="turnedAround = false"><i class="fa fa-2x fa-times"></i></div>
-		</div>
-		<div class="col-lg-3 col-md-4 col-sm-4 tile tile-blue text-center">
-			<div class="outside-fan" style="margin-left: auto; margin-right: auto">
-				<div ng-class="{'rotating': vals.isHeating}" class="inside-fan"></div>
-			</div><br><br>
-			<button class="btn btn-lg btn-default btn-danger" ng-click="kill()" ng-show="!vals.killed">DISABLE</button>
-			<button class="btn btn-lg btn-default btn-primary" ng-click="reset()" ng-show="vals.killed">ENABLE</button>
-
 		</div>
 	</div>
-	<div class="clearfix"></div><br>
-
-
-
-<footer class="text-center"><br>
-	<p style="color: #fff">Kyle Curren &copy; {{copyright | date:'yyyy'}}</p>
-</footer>
+	<div class="clearfix"></div>
+	<div class="col-xs-6 text-center" style="border-right: 4px solid #ccc">
+		{{settings.targetTemp}}&deg;<br>
+		Target Temp
+	</div>
+	<div class="col-xs-6 text-center">
+		<div class="pointer" ng-show="!turnedAround" ng-click="turnedAround = true"><i class="fa fa-cog"></i><br>Settings</div>
+		<div class="pointer" ng-show="turnedAround" ng-click="turnedAround = false"><i class="fa fa-times"></i><br>Cancel</div>
+	</div>
+	<div class="clearfix"></div>
+	<footer class="text-center">
+		<p>ksc4130 &amp; rconner614 &copy; {{copyright | date:'yyyy'}}</p>
+	</footer>
 
     <script src="https://code.jquery.com/jquery-2.2.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-rc.1/angular.min.js"></script>
-    <scirpt src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.min.js"></scirpt>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.17/angular-ui-router.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     
     <script src="/app.js"></script>
